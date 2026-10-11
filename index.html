@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Idea2Decision | From idea to decision</title>
+<meta name="description" content="Idea2Decision: turn an idea into a decision. Find ideas that can work where you live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF2F4;--surface:#FFFFFF;--surface2:#F5F8F9;--ink:#12232E;--muted:#576B78;--line:#D3DDE2;
+  --accent:#0F7B7D;--accent-ink:#FFFFFF;--gold:#E0A100;--danger:#B3323F;--ok:#2E7D32;
+  --c1:#0F8B8D;--c2:#E0A100;--c3:#5B5BD6;--c4:#D1495B;--c5:#5E9E3D;
+  --shadow:0 1px 2px rgba(18,35,46,.06),0 8px 24px rgba(18,35,46,.06);
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Figtree','Segoe UI',system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0B171E;--surface:#12232C;--surface2:#183040;--ink:#E7EFF3;--muted:#92A8B4;--line:#26404F;
+  --accent:#3CC3C5;--accent-ink:#06222A;--gold:#F0B92A;--danger:#FF7A86;--ok:#7BD17F;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);padding:.55rem .95rem;border-radius:10px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--danger);border-color:var(--danger);background:transparent}
+.btn.small{padding:.3rem .65rem;font-size:.88rem}
+label{display:block;font-weight:600;font-size:.92rem;margin-bottom:.9rem}
+input,select,textarea{width:100%;margin-top:.3rem;padding:.6rem .75rem;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:400}
+textarea{min-height:84px;resize:vertical}
+.err{color:var(--danger);min-height:1.3em;font-size:.9rem;margin-bottom:.5rem}
+.muted{color:var(--muted)}
+.empty{color:var(--muted);padding:1rem 0}
+
+/* auth */
+.auth{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.hero{background:linear-gradient(160deg,#0B3B44,#0A1F2A);color:#E7EFF3;padding:3rem;display:flex;flex-direction:column;justify-content:center;gap:1.5rem}
+.hero h1{font-size:clamp(2.2rem,4.4vw,3.6rem);max-width:12ch}
+.hero p{max-width:40ch;color:#B7CBD4}
+.hero svg{width:min(320px,70%);height:auto}
+.authwrap{display:flex;align-items:center;justify-content:center;padding:2rem}
+.authcard{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:1.6rem;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:.4rem;background:var(--surface2);padding:.3rem;border-radius:12px;margin-bottom:1.2rem}
+.tabs button{flex:1;border:0;background:transparent;padding:.55rem;border-radius:9px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.hint{font-size:.85rem;color:var(--muted);margin-top:1rem}
+.authcard .btn.primary{width:100%}
+
+/* setup */
+.setup{max-width:720px;margin:0 auto;padding:2rem 1rem 4rem}
+.setup .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:1.6rem;box-shadow:var(--shadow);margin-top:1.2rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+.checks{display:flex;flex-wrap:wrap;gap:.5rem;margin:.4rem 0 1rem}
+.checks label{display:flex;align-items:center;gap:.4rem;margin:0;border:1px solid var(--line);padding:.35rem .7rem;border-radius:99px;font-weight:500;cursor:pointer;background:var(--surface)}
+.checks input{width:auto;margin:0}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:1rem;padding:.6rem 1rem}
+.brand{display:flex;align-items:center;gap:.55rem;font-family:var(--display);font-weight:800;font-size:1.2rem;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.nav{display:flex;gap:.25rem;overflow-x:auto;flex:1;scrollbar-width:none}
+.nav button{border:0;background:transparent;padding:.5rem .85rem;border-radius:9px;cursor:pointer;font-weight:600;color:var(--muted);white-space:nowrap}
+.nav button.on{background:var(--accent);color:var(--accent-ink)}
+.nav button:not(.on):hover{background:var(--surface2);color:var(--ink)}
+.burger{border:1px solid var(--line);background:var(--surface);width:42px;height:42px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px}
+.burger span{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px}
+main{max-width:1180px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.pagehead{margin-bottom:1.2rem;display:grid;gap:.4rem}
+.pagehead p{color:var(--muted);max-width:62ch}
+
+/* drawer */
+#scrim{position:fixed;inset:0;background:rgba(5,15,20,.5);z-index:40}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,92vw);background:var(--surface);z-index:41;transform:translateX(105%);transition:transform .25s;padding:1.2rem;overflow-y:auto;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:1.1rem}
+#drawer.open{transform:none}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:.3rem .8rem;font-size:.92rem}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0;overflow-wrap:anywhere}
+.seg{display:flex;gap:.4rem}
+.seg button{flex:1}
+.seg button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sect{border-top:1px solid var(--line);padding-top:1rem;display:grid;gap:.6rem}
+
+/* ideas */
+.toolbar{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;align-items:center}
+.toolbar input,.toolbar select{margin:0;width:auto;flex:1;min-width:150px}
+.toolbar .grow{flex:2;min-width:220px}
+.count{color:var(--muted);font-size:.9rem;margin:0 0 .8rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;box-shadow:var(--shadow)}
+.card p{font-size:.9rem;color:var(--muted)}
+.tag{font-size:.78rem;font-weight:700;color:var(--accent);}
+.votebar{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.votebar span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.meta{display:flex;flex-wrap:wrap;gap:.3rem .9rem;font-size:.88rem;color:var(--muted)}
+.meta b{color:var(--ink)}
+.verdict{font-size:.8rem;font-weight:700;display:inline-block;padding:.15rem .55rem;border-radius:99px;width:fit-content}
+.v-go{background:rgba(46,125,50,.14);color:var(--ok)}
+.v-mid{background:rgba(224,161,0,.18);color:#8A6500}
+[data-theme="dark"] .v-mid{color:var(--gold)}
+.v-low{background:var(--surface2);color:var(--muted)}
+.acts{display:flex;gap:.5rem;margin-top:auto}
+.acts .btn{flex:1}
+.acts .voted{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.more{display:block;margin:1.4rem auto 0}
+
+/* modal */
+#modal{position:fixed;inset:0;z-index:50;background:rgba(5,15,20,.55);display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.sheet{background:var(--surface);border-radius:18px;max-width:860px;width:100%;box-shadow:var(--shadow);border:1px solid var(--line)}
+.sheethead{display:flex;justify-content:space-between;gap:1rem;padding:1.2rem 1.4rem;border-bottom:1px solid var(--line)}
+.sheetbody{padding:1.2rem 1.4rem 1.6rem}
+.mtabs{display:flex;gap:.3rem;padding:.6rem 1.4rem 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.mtabs button{border:0;background:transparent;padding:.6rem .9rem;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.mtabs button.on{color:var(--ink);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;margin:1rem 0}
+.stat{background:var(--surface2);border-radius:12px;padding:.7rem .9rem}
+.stat b{display:block;font-family:var(--display);font-size:1.3rem}
+.stat span{font-size:.82rem;color:var(--muted)}
+.flow{overflow-x:auto;background:var(--surface2);border-radius:14px;padding:.8rem;margin:.8rem 0 1.4rem}
+.flow svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.flow .nb{fill:var(--surface);stroke:var(--accent);stroke-width:1.6}
+.flow .ns{fill:var(--accent);stroke:var(--accent)}
+.flow .nd{fill:var(--surface);stroke:var(--gold);stroke-width:1.8}
+.flow .nf{fill:var(--surface);stroke:var(--danger);stroke-width:1.6}
+.flow text{font-size:13px;fill:var(--ink);font-family:var(--body)}
+.flow .ts{fill:var(--accent-ink);font-weight:700}
+.flow .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+.flow .lb{font-size:12px;fill:var(--muted);font-weight:700}
+.phase{border-left:3px solid var(--accent);padding:.2rem 0 .2rem 1rem;margin-bottom:1rem}
+.phase h3{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.phase h3 small{font-family:var(--body);font-weight:600;color:var(--muted);font-size:.85rem}
+.phase ul{margin:.4rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.fb{border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin-bottom:.7rem}
+.fb small{color:var(--muted)}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:.7rem}
+.msgs{display:flex;flex-direction:column;gap:.6rem;max-height:340px;overflow-y:auto;padding:.3rem}
+.bub{max-width:85%;padding:.6rem .85rem;border-radius:14px;white-space:pre-wrap;font-size:.95rem}
+.bub.u{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+.bub.a{align-self:flex-start;background:var(--surface2);border-bottom-left-radius:4px}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:.25rem .7rem;font-size:.84rem;cursor:pointer}
+.chips button:hover{border-color:var(--accent)}
+.chat form{display:flex;gap:.5rem}
+.chat form input{margin:0}
+.chatpage .msgs{max-height:52vh;min-height:240px}
+.panel2{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.2rem;box-shadow:var(--shadow)}
+
+/* rank */
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-size:.9rem;color:var(--muted);margin-bottom:1rem;align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:.35rem;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:.93rem}
+th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--line)}
+th{background:var(--surface2);font-size:.85rem;color:var(--muted)}
+tr[data-act]{cursor:pointer}
+tr[data-act]:hover td{background:var(--surface2)}
+.tscroll{overflow-x:auto;margin-bottom:1.6rem}
+.charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.chartcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:.9rem;cursor:pointer;border-top-width:4px}
+.chartcard h3{font-size:.98rem;display:flex;gap:.5rem}
+.chartcard small{color:var(--muted);display:block;margin-bottom:.3rem}
+.chart{width:100%;height:auto;display:block}
+.ct{font-size:10px;fill:var(--muted);font-family:var(--body)}
+.cl{font-size:11px;fill:var(--ink);font-family:var(--body)}
+
+/* fit */
+.fitgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1.2rem;align-items:start}
+.ring{display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.bar{margin:.5rem 0}
+.bar div{display:flex;justify-content:space-between;font-size:.88rem}
+.bar span.t{display:block;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-top:.2rem}
+.bar span.t i{display:block;height:100%;background:var(--accent)}
+.reasons{padding-left:1.1rem;color:var(--muted)}
+.reasons li{margin-bottom:.3rem}
+
+/* history */
+.urlbar{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:.35rem .4rem .35rem 1rem;box-shadow:var(--shadow);margin-bottom:1.2rem}
+.urlbar input{border:0;margin:0;background:transparent;padding:.4rem 0}
+.urlbar input:focus{outline:none}
+.urlbar:focus-within{outline:3px solid var(--gold)}
+.hist{list-style:none;padding:0;margin:0;display:grid;gap:.5rem}
+.hist li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.6rem .9rem;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+.hist li[data-act]{cursor:pointer}
+.hist li[data-act]:hover{border-color:var(--accent)}
+.hist small{color:var(--muted);white-space:nowrap}
+.kind{font-size:.75rem;font-weight:700;color:var(--accent);margin-right:.5rem}
+
+#toast{position:fixed;left:50%;bottom:1.4rem;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.6rem 1.1rem;border-radius:10px;z-index:80;font-weight:600;box-shadow:var(--shadow)}
+
+@media(max-width:860px){
+  .auth{grid-template-columns:1fr}
+  .hero{padding:1.6rem}
+  .hero svg{width:150px}
+  .fitgrid{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr}
+  .brand span{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div id="auth" class="auth" hidden></div>
+<div id="setup" hidden></div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="2.5"/><polygon points="20,6 25,20 20,34 15,20" fill="var(--accent)"/><polygon points="20,6 25,20 15,20" fill="var(--gold)"/></svg>
+      <span>Idea2Decision</span>
+    </div>
+    <nav class="nav" id="nav" aria-label="Main">
+      <button data-act="page" data-p="ideas">Ideas</button>
+      <button data-act="page" data-p="rank">Rank</button>
+      <button data-act="page" data-p="fit">Local fit</button>
+      <button data-act="page" data-p="history">History</button>
+      <button data-act="page" data-p="chat">Chat</button>
+    </nav>
+    <button class="burger" data-act="drawer" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </header>
+  <main id="view"></main>
+</div>
+
+<div id="scrim" data-act="closedrawer" hidden></div>
+<aside id="drawer" aria-label="Menu" aria-hidden="true"></aside>
+<div id="modal" hidden></div>
+<div id="toast" role="status" hidden></div>
+
+<script>
+'use strict';
+/* ================= helpers ================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={
+  get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
+  del(k){try{localStorage.removeItem(k)}catch(e){}}
+};
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function hash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
+const fmtN=n=>Number(n).toLocaleString('en-IN');
+const fmtCost=n=>n>=100000?'₹'+(n/100000).toFixed(1).replace('.0','')+' L':'₹'+fmtN(n);
+const short=v=>v>=1000?(v/1000).toFixed(1)+'k':String(Math.round(v));
+const COLORS=['#0F8B8D','#E0A100','#5B5BD6','#D1495B','#5E9E3D'];
+function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2400)}
+
+/* ================= data: 10 domains x 20 ideas x 50 styles = 10,000 ideas ================= */
+const MODS=['Smart','Village','Solar','Low-cost','Women-led','Mobile','Student','Urban','Organic','Digital','Community','Premium','Rural','Eco','Rapid','Night','Campus','Family','Senior','Budget','Hybrid','Local','Pocket','Zero-waste','Festival','Coastal','Hill','Metro','Weekend','Subscription','Franchise','Co-op','Tiny','Open-source','Voice-first','Offline','Seasonal','Pop-up','On-demand','Shared','Heritage','Youth','Wholesale','Home-based','AI-powered','Modular','Express','Neighbourhood','Cloud','Fair-price'];
+const URBAN_MODS=['Urban','Metro','Campus','Cloud','Night','Digital','AI-powered','Premium','Pop-up','Express'];
+const RURAL_MODS=['Village','Rural','Home-based','Offline','Co-op','Seasonal'];
+const DOMAINS=[
+ {id:'agri',name:'Agriculture',base:60000,aff:[40,75,95],kw:['agri','farm','crop'],
+  pitch:'helps farmers cut losses and reach better prices.',first:'farmers in two nearby villages',
+  lic:'Udyam registration, GST once sales cross the limit, and any local mandi or agriculture licence',kit:'tools, storage and transport from local suppliers',
+  market:'Start with farmer groups, FPOs and WhatsApp groups of local growers. Demonstrate on one farm and let results spread.',
+  nouns:['Seed Bank','Drip Kit','Soil Lab','Cold Chain Cart','Mandi Tracker','Compost Hub','Greenhouse','Crop Insurance Desk','Tractor Share','Mushroom Farm','Beekeeping Unit','Dairy Collective','Millet Mill','Fish Pond','Agri Drone Service','Seedling Nursery','Organic Store','Irrigation Planner','Farm Stay','Harvest Exchange']},
+ {id:'edu',name:'Education',base:40000,aff:[80,75,60],kw:['educat','school','study','learn'],
+  pitch:'gives students better learning and skills close to home.',first:'students and parents from nearby schools',
+  lic:'Udyam registration, a shop or society registration, and a trade licence if you rent a hall',kit:'a rented room, laptops or tablets, books and a projector',
+  market:'Offer a free demo class, partner with a school or college club, and ask parents to refer other parents.',
+  nouns:['Study Circle','Coding Camp','Library Pod','Language Club','Skill Academy','Exam Coach','Maker Lab','Tutor Network','Scholarship Finder','Career Desk','Reading Van','Robotics Club','Teacher Toolkit','Quiz Arena','Digital Class','Science Bus','Homework Helpline','Mentor Match','Craft School','Notes Exchange']},
+ {id:'health',name:'Health',base:90000,aff:[80,75,65],kw:['health','medic','doctor','fitness'],
+  pitch:'brings simple, affordable care and prevention to more people.',first:'families and elders in your neighbourhood',
+  lic:'Udyam registration, and the clinical or Ayush registration that applies to your service',kit:'screening devices, furniture, supplies and a small trained team',
+  market:'Work with local doctors, RWAs, panchayat offices and ASHA workers. Free check-up days build trust quickly.',
+  nouns:['Health Kiosk','Mobile Clinic','Yoga Studio','Diet Planner','Elder Care Desk','Blood Donor Network','Medicine Reminder','Therapy Circle','First Aid Academy','Tele-Doctor Booth','Fitness Trail','Dental Camp','Eye Check Van','Ayush Corner','Sleep Lab','Vaccination Tracker','Pharmacy Locker','Wellness Cafe','Nutrition Pantry','Ambulance Finder']},
+ {id:'energy',name:'Clean Energy',base:150000,aff:[70,80,85],kw:['energy','solar','power','electric'],
+  pitch:'cuts power bills and brings reliable clean energy.',first:'shops, homes and farms with high power bills',
+  lic:'Udyam registration, DISCOM approval for grid-connected systems, and a trained installer',kit:'panels or equipment from certified suppliers and safety gear',
+  market:'Show a clear payback calculation to shop owners and farmers. Use subsidy schemes as a selling point.',
+  nouns:['Solar Rooftop','Biogas Unit','Wind Pump','Charging Point','Battery Swap Station','Energy Audit Desk','Solar Dryer','Micro Grid','Smart Meter Service','LED Exchange','Solar Streetlight','Pellet Plant','Hydro Mill','Cookstove Shop','Solar Pump','Power Bank Rental','Heat Recovery Unit','Energy Coop','Panel Cleaning Service','Green Hydrogen Lab']},
+ {id:'food',name:'Food & Hospitality',base:120000,aff:[85,75,55],kw:['food','cook','restaurant','cafe'],
+  pitch:'serves tasty, safe food people come back for.',first:'office workers, students and families nearby',
+  lic:'FSSAI registration, Udyam registration, and a local trade or shop licence',kit:'kitchen equipment, packaging, a refrigerator and a reliable ingredient supplier',
+  market:'Give samples, list on delivery apps, and use WhatsApp menus for repeat orders. Consistency matters more than variety.',
+  nouns:['Cloud Kitchen','Tiffin Service','Millet Cafe','Street Food Cart','Bakery Lab','Juice Bar','Meal Subscription','Spice Studio','Snack Brand','Food Truck','Community Kitchen','Pickle Works','Tea Stall','Ice Cream Parlour','Regional Thali House','Catering Desk','Sweet Shop','Ready Mix Unit','Homestyle Dhaba','Leftover Rescue']},
+ {id:'retail',name:'Retail & Marketplace',base:100000,aff:[85,75,55],kw:['retail','shop','store','sell'],
+  pitch:'helps people buy and sell useful things at fair prices.',first:'households and small shops within 3 km',
+  lic:'Udyam registration, GST registration, and a shop and establishment licence',kit:'stock, shelving, billing software and a small delivery setup',
+  market:'Offer a first-order discount, put up a board at a busy corner, and use WhatsApp groups of nearby residents.',
+  nouns:['Neighbourhood Store','Thrift Shop','Handloom Market','Rental Wardrobe','Gift Studio','Bulk Buy Club','Refill Station','Pop-up Bazaar','Local Delivery','Craft Marketplace','Repair Cafe','Book Exchange','Farm Box','Kirana Upgrade','Tool Library','Second-hand Phones','Festival Stall','Print Shop','Pet Supplies','Stationery Hub']},
+ {id:'tech',name:'Tech & Apps',base:50000,aff:[90,70,45],kw:['tech','app','software','website'],
+  pitch:'solves a daily problem with simple software people actually use.',first:'a small group of early users you know personally',
+  lic:'Udyam registration, a privacy policy, and GST once you start charging',kit:'a laptop, cloud hosting, design tools and a test phone',
+  market:'Ship a small version to 20 users, watch how they use it, and grow through communities they already belong to.',
+  nouns:['Booking App','Local Jobs App','Chatbot Service','Web Studio','Data Dashboard','IoT Sensor Kit','Payment Helper','Inventory App','Voice Assistant','AR Guide','Cyber Safety Desk','Repair Tracker','Community App','Game Studio','QR Menu Tool','Smart Attendance','Language Translator','Complaint Portal','Freelance Hub','Learning Platform']},
+ {id:'transport',name:'Transport',base:200000,aff:[85,70,50],kw:['transport','vehicle','bike','travel'],
+  pitch:'moves people and goods more cheaply and safely.',first:'daily commuters, shops and small businesses',
+  lic:'Udyam registration, vehicle permits and insurance, and driver verification',kit:'vehicles, insurance, a GPS tracker and a simple booking process',
+  market:'Tie up with colleges, offices and markets. Fixed routes and clear pricing make people trust you.',
+  nouns:['Bike Rental','Auto Share','Cargo Van','E-Rickshaw Fleet','School Bus Tracker','Cycle Lane Service','Parking Finder','Ride Pool','Last-mile Shuttle','Vehicle Repair Hub','Boat Taxi','Ambulance Bike','Courier Network','Driver Training','EV Rental','Bus Pass App','Tow Service','Tourist Taxi','Milk Run','Helmet Library']},
+ {id:'waste',name:'Waste & Environment',base:70000,aff:[80,70,55],kw:['waste','recycl','water','environment'],
+  pitch:'turns waste and water problems into a clean, paying service.',first:'housing societies, shops and local offices',
+  lic:'Udyam registration, local body or pollution board permission, and safe disposal records',kit:'collection bins, a vehicle, protective gear and a sorting space',
+  market:'Sign monthly contracts with housing societies and markets. Share monthly impact numbers to keep them.',
+  nouns:['Recycling Hub','Plastic Bank','E-waste Collection','Compost Bin Service','Upcycle Studio','Water ATM','Rainwater Harvester','Tree Nursery','Lake Cleanup Crew','Paper Recycler','Scrap Marketplace','Greywater Unit','Clean Street Patrol','Textile Recycler','Bottle Return','Smart Bin','Sewage Biogas','River Watch','Garden Waste Mulcher','Zero Waste Store']},
+ {id:'community',name:'Community & Tourism',base:80000,aff:[70,75,70],kw:['tourism','community','homestay','event'],
+  pitch:'brings people together and shows off what makes a place special.',first:'residents, visitors and local clubs',
+  lic:'Udyam registration, a tourism department registration where it applies, and event permissions',kit:'a small space, signage, a camera, and a trained local guide or host',
+  market:'Post photos and short videos, partner with local hotels and clubs, and collect reviews from every visitor.',
+  nouns:['Homestay Network','Heritage Walk','Local Guide App','Craft Trail','Festival Planner','Co-working Space','Youth Club','Women Collective','Senior Club','Sports Turf','Event Hall','Temple Town Tour','Eco Camp','Photo Studio','Adventure Park','Night Market','Art Gallery','Music School','Volunteer Hub','Village Museum']}
+];
+const DOM={};DOMAINS.forEach(d=>DOM[d.id]=d);
+const IDEAS=[];
+DOMAINS.forEach((d,di)=>MODS.forEach(m=>d.nouns.forEach(n=>{
+  const id=IDEAS.length+1,r=rng(id*7919+di*131);
+  IDEAS.push({id,dom:d.id,mod:m,noun:n,name:m+' '+n,
+    votes:Math.floor(Math.pow(r(),2.6)*4900)+15,
+    rating:+(3.1+r()*1.8).toFixed(1),
+    cost:Math.max(10000,Math.round(d.base*(0.4+r()*1.8)/5000)*5000),
+    months:1+Math.floor(r()*9),diff:1+Math.floor(r()*5)});
+})));
+const descOf=i=>`${i.name} is a ${DOM[i.dom].name.toLowerCase()} idea that ${DOM[i.dom].pitch}`;
+const verdict=v=>v>=2500?['Go for it','v-go']:v>=800?['Promising','v-mid']:['Test first','v-low'];
+const score=i=>i.votes+i.rating*100;
+let _top=null;const topIdeas=()=>_top||(_top=[...IDEAS].sort((a,b)=>score(b)-score(a)).slice(0,30));
+
+/* ================= users & state ================= */
+let me=null,UD=null;
+const S={page:'ideas',q:'',dom:'all',sort:'votes',limit:24,rankCount:24,tab:'overview'};
+const users=()=>LS.get('ic_users',{});
+function loadUser(email){me=users()[email];UD=LS.get('ic_data_'+email,{votes:{},history:[],chats:{}});UD.votes=UD.votes||{};UD.history=UD.history||[];UD.chats=UD.chats||{}}
+const saveUD=()=>LS.set('ic_data_'+me.email,UD);
+function saveMe(){const u=users();u[me.email]=me;LS.set('ic_users',u)}
+function logH(type,text,id){UD.history.unshift({t:Date.now(),type,text,id:id||null});UD.history=UD.history.slice(0,300);saveUD()}
+const votesOf=i=>i.votes+(UD.votes[i.id]?1:0);
+const profileDone=()=>me&&me.profile&&me.profile.name&&me.profile.country;
+
+/* ================= theme ================= */
+function setTheme(t){document.documentElement.dataset.theme=t;LS.set('ic_theme',t)}
+
+/* ================= auth ================= */
+function compassHero(){return `<svg viewBox="0 0 300 300" id="compass" aria-hidden="true">
+<circle cx="150" cy="150" r="140" fill="none" stroke="#3D6372" stroke-width="2"/><circle cx="150" cy="150" r="118" fill="none" stroke="#2A4C5A" stroke-width="1"/>
+${Array.from({length:36},(_,k)=>{const a=k*10*Math.PI/180,l=k%9===0?16:8;return `<line x1="${150+Math.sin(a)*140}" y1="${150-Math.cos(a)*140}" x2="${150+Math.sin(a)*(140-l)}" y2="${150-Math.cos(a)*(140-l)}" stroke="#6F96A6" stroke-width="2"/>`}).join('')}
+<text x="150" y="42" fill="#E7EFF3" font-size="18" font-weight="700" text-anchor="middle">N</text><text x="266" y="156" fill="#92A8B4" font-size="16" text-anchor="middle">E</text><text x="150" y="272" fill="#92A8B4" font-size="16" text-anchor="middle">S</text><text x="34" y="156" fill="#92A8B4" font-size="16" text-anchor="middle">W</text>
+<g id="needle" transform="rotate(20 150 150)"><polygon points="150,50 166,150 134,150" fill="#E0A100"/><polygon points="150,250 166,150 134,150" fill="#3CC3C5"/><circle cx="150" cy="150" r="8" fill="#E7EFF3"/></g></svg>`}
+function showAuth(mode='login'){
+  $('#app').hidden=true;$('#setup').hidden=true;
+  const a=$('#auth');a.hidden=false;
+  a.innerHTML=`<section class="hero">${compassHero()}<h1>Turn your idea into a decision.</h1><p>Idea2Decision gives you 10,000 ideas with votes, step-by-step build plans and a check on whether each one can work where you live.</p></section>
+  <section class="authwrap"><div class="authcard">
+   <div class="tabs"><button data-act="authtab" data-m="login" class="${mode==='login'?'on':''}">Log in</button><button data-act="authtab" data-m="signup" class="${mode==='signup'?'on':''}">Sign up</button></div>
+   <form data-form="${mode}" novalidate>
+    <label>Email<input name="email" type="email" autocomplete="email" required></label>
+    <label>Password<input name="password" type="password" autocomplete="${mode==='login'?'current-password':'new-password'}" required></label>
+    ${mode==='signup'?'<label>Confirm password<input name="confirm" type="password" autocomplete="new-password" required></label>':''}
+    <p class="err" id="autherr" role="alert"></p>
+    <button class="btn primary">${mode==='login'?'Log in':'Create account'}</button>
+   </form>
+   <p class="hint">Accounts and data are saved only in this browser.</p>
+  </div></section>`;
+}
+document.addEventListener('mousemove',e=>{
+  const c=$('#compass'),n=$('#needle');if(!c||!n)return;
+  const r=c.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  n.setAttribute('transform',`rotate(${Math.atan2(dy,dx)*180/Math.PI+90} 150 150)`);
+});
+function doSignup(f){
+  const email=f.elements.email.value.trim().toLowerCase(),pw=f.elements.password.value,err=$('#autherr');
+  if(!/^\S+@\S+\.\S+$/.test(email))return err.textContent='Enter a valid email address.';
+  if(pw.length<6)return err.textContent='Use a password with at least 6 characters.';
+  if(pw!==f.elements.confirm.value)return err.textContent='The two passwords do not match.';
+  const u=users();if(u[email])return err.textContent='This email already has an account. Log in instead.';
+  u[email]={email,pw:hash(email+'|'+pw),created:Date.now(),profile:null};LS.set('ic_users',u);
+  LS.set('ic_session',email);loadUser(email);showSetup(false);
+}
+function doLogin(f){
+  const email=f.elements.email.value.trim().toLowerCase(),pw=f.elements.password.value,err=$('#autherr'),u=users()[email];
+  if(!u)return err.textContent='No account found for this email. Sign up first.';
+  if(u.pw!==hash(email+'|'+pw))return err.textContent='Wrong password. Try again.';
+  LS.set('ic_session',email);loadUser(email);profileDone()?enterApp():showSetup(false);
+}
+
+/* ================= personal details ================= */
+function setupHTML(p,editing){
+  p=p||{};const ints=p.interests||[];
+  return `<div class="setup"><h1>${editing?'Edit your details':'Tell us about you'}</h1>
+  <p class="muted">${editing?'Update anything that changed.':'This is your first visit, so please fill in your details. We use them to prefill Local fit.'}</p>
+  <form class="panel" data-form="profile" data-edit="${editing?1:0}" novalidate>
+   <div class="row2"><label>Full name<input name="name" value="${esc(p.name)}" autocomplete="name" required></label>
+   <label>Phone<input name="phone" value="${esc(p.phone)}" inputmode="tel" autocomplete="tel" required></label></div>
+   <div class="row2"><label>I am a<select name="occ" required>${['','Student','Working professional','Business owner','Farmer','Homemaker','Other'].map(o=>`<option value="${o}" ${p.occ===o?'selected':''}>${o||'Choose one'}</option>`).join('')}</select></label>
+   <label>College or company<input name="org" value="${esc(p.org)}"></label></div>
+   <div class="row2"><label>City or town<input name="city" value="${esc(p.city)}" required></label>
+   <label>State<input name="state" value="${esc(p.state)}" required></label></div>
+   <label>Country<input name="country" value="${esc(p.country)}" required></label>
+   <label style="margin-bottom:.2rem">Idea areas you like</label>
+   <div class="checks">${DOMAINS.map(d=>`<label><input type="checkbox" name="int" value="${d.id}" ${ints.includes(d.id)?'checked':''}>${d.name}</label>`).join('')}</div>
+   <label>About you (optional)<textarea name="about">${esc(p.about)}</textarea></label>
+   <p class="err" id="perr" role="alert"></p>
+   <div style="display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn primary">${editing?'Save changes':'Save and enter'}</button>${editing?'<button type="button" class="btn" data-act="cancelsetup">Cancel</button>':'<button type="button" class="btn" data-act="logout">Sign out</button>'}</div>
+  </form></div>`;
+}
+function showSetup(editing){
+  $('#auth').hidden=true;$('#app').hidden=editing?false:true;
+  const s=$('#setup');s.hidden=false;
+  if(editing){s.style.cssText='position:fixed;inset:0;z-index:60;background:var(--bg);overflow:auto'}else s.style.cssText='';
+  s.innerHTML=setupHTML(editing?me.profile:null,editing);window.scrollTo(0,0);
+}
+function saveProfile(f){
+  const g=n=>f.elements[n].value.trim(),err=$('#perr');
+  const p={name:g('name'),phone:g('phone'),occ:g('occ'),org:g('org'),city:g('city'),state:g('state'),country:g('country'),about:g('about'),interests:$$('input[name=int]:checked',f).map(x=>x.value)};
+  if(!p.name||!p.phone||!p.occ||!p.city||!p.state||!p.country)return err.textContent='Fill in name, phone, who you are, city, state and country.';
+  me.profile=p;saveMe();
+  if(f.dataset.edit==='1'){$('#setup').hidden=true;$('#setup').style.cssText='';toast('Details saved');closeDrawer();}else enterApp();
+}
+
+/* ================= drawer ================= */
+function openDrawer(){
+  const p=me.profile||{},d=$('#drawer');
+  const dark=document.documentElement.dataset.theme==='dark';
+  d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h2>Your account</h2><button class="btn small" data-act="closedrawer" aria-label="Close menu">Close</button></div>
+  <div><h3 style="margin-bottom:.6rem">Personal details</h3><dl class="dl">
+   <dt>Name</dt><dd>${esc(p.name)}</dd><dt>Email</dt><dd>${esc(me.email)}</dd><dt>Phone</dt><dd>${esc(p.phone)}</dd>
+   <dt>Role</dt><dd>${esc(p.occ)}${p.org?', '+esc(p.org):''}</dd><dt>Place</dt><dd>${esc(p.city)}, ${esc(p.state)}, ${esc(p.country)}</dd>
+   <dt>Interests</dt><dd>${(p.interests||[]).map(x=>DOM[x]?.name).filter(Boolean).join(', ')||'None chosen'}</dd>
+   ${p.about?`<dt>About</dt><dd>${esc(p.about)}</dd>`:''}</dl>
+   <button class="btn small" style="margin-top:.8rem" data-act="editprofile">Edit details</button></div>
+  <div class="sect"><h3>Appearance</h3><div class="seg"><button class="btn ${dark?'':'on'}" data-act="theme" data-t="light">Light</button><button class="btn ${dark?'on':''}" data-act="theme" data-t="dark">Dark</button></div></div>
+  <div class="sect"><button class="btn" data-act="logout">Sign out</button><button class="btn danger" data-act="delete">Delete account</button></div>`;
+  d.classList.add('open');d.setAttribute('aria-hidden','false');$('#scrim').hidden=false;
+}
+function closeDrawer(){$('#drawer').classList.remove('open');$('#drawer').setAttribute('aria-hidden','true');$('#scrim').hidden=true}
+function logout(){LS.del('ic_session');me=null;UD=null;closeDrawer();closeModal();showAuth('login')}
+function deleteAccount(){
+  if(!confirm('Delete your account? Your details, votes, history and chats will be removed from this browser. This cannot be undone.'))return;
+  const email=me.email,u=users();delete u[email];LS.set('ic_users',u);LS.del('ic_data_'+email);
+  const fb=LS.get('ic_feedback',{});Object.keys(fb).forEach(k=>{fb[k]=fb[k].filter(x=>x.by!==email)});LS.set('ic_feedback',fb);
+  logout();toast('Account deleted');
+}
+
+/* ================= app shell ================= */
+function enterApp(){$('#auth').hidden=true;$('#setup').hidden=true;$('#app').hidden=false;setPage(S.page)}
+function setPage(p){
+  S.page=p;$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  ({ideas:viewIdeas,rank:viewRank,fit:viewFit,history:viewHistory,chat:viewChat})[p]();window.scrollTo(0,0);
+}
+const view=()=>$('#view');
+
+/* ================= ideas page ================= */
+let _fk='',_fl=[];
+function filtered(){
+  const k=[S.q,S.dom,S.sort].join('|');if(k===_fk)return _fl;
+  const q=S.q.toLowerCase();
+  let l=IDEAS.filter(i=>(S.dom==='all'||i.dom===S.dom)&&(!q||i.name.toLowerCase().includes(q)||DOM[i.dom].name.toLowerCase().includes(q)));
+  const sorts={votes:(a,b)=>b.votes-a.votes,rating:(a,b)=>b.rating-a.rating||b.votes-a.votes,cheap:(a,b)=>a.cost-b.cost,new:(a,b)=>b.id-a.id};
+  l=l.sort(sorts[S.sort]);_fk=k;_fl=l;return l;
+}
+function cardHTML(i){
+  const v=votesOf(i),[vt,vc]=verdict(v),voted=!!UD.votes[i.id];
+  return `<article class="card"><span class="tag">${esc(DOM[i.dom].name)}</span><h3>${esc(i.name)}</h3><p>${esc(descOf(i))}</p>
+  <div class="votebar" aria-hidden="true"><span style="width:${Math.min(100,v/50)}%"></span></div>
+  <div class="meta"><span><b>${fmtN(v)}</b> votes</span><span>★ <b>${i.rating}</b></span><span>Start: <b>${fmtCost(i.cost)}</b></span></div>
+  <span class="verdict ${vc}">${vt}</span>
+  <div class="acts"><button class="btn small" data-act="open" data-id="${i.id}">Plan and feedback</button><button class="btn small ${voted?'voted':''}" data-act="vote" data-id="${i.id}" aria-pressed="${voted}">${voted?'Voted':'Vote'}</button></div></article>`;
+}
+function viewIdeas(){
+  view().innerHTML=`<div class="pagehead"><h1>Ideas</h1><p>${fmtN(IDEAS.length)} ideas. More votes means more people think an idea is worth building. Ideas with 2,500+ votes are marked "Go for it".</p></div>
+  <div class="toolbar"><input class="grow" id="q" type="search" placeholder="Search ideas, for example solar or tiffin" value="${esc(S.q)}" aria-label="Search ideas">
+   <select id="dom" aria-label="Domain"><option value="all">All domains</option>${DOMAINS.map(d=>`<option value="${d.id}" ${S.dom===d.id?'selected':''}>${d.name}</option>`).join('')}</select>
+   <select id="sort" aria-label="Sort"><option value="votes">Most votes</option><option value="rating">Best rated</option><option value="cheap">Lowest cost</option><option value="new">Newest</option></select></div>
+  <p class="count" id="count"></p><div class="grid" id="grid"></div><button class="btn more" id="more" data-act="more">Show more</button>`;
+  $('#sort').value=S.sort;updateGrid();
+}
+function updateGrid(){
+  const l=filtered();$('#grid').innerHTML=l.slice(0,S.limit).map(cardHTML).join('')||'<p class="empty">No ideas match. Try a shorter search.</p>';
+  $('#count').textContent=`Showing ${Math.min(S.limit,l.length)} of ${fmtN(l.length)} ideas`;$('#more').hidden=S.limit>=l.length;
+}
+function vote(id){
+  const i=IDEAS[id-1];if(UD.votes[id]){delete UD.votes[id];toast('Vote removed')}else{UD.votes[id]=1;toast('Vote added for '+i.name);logH('vote','Voted for '+i.name,id)}
+  saveUD();
+  if(S.page==='ideas')updateGrid();else if(S.page==='rank')viewRank();
+  if(!$('#modal').hidden)renderSheet(S.openId);
+}
+
+/* ================= idea modal ================= */
+function openIdea(id,tab){S.openId=id;S.tab=tab||'overview';logH('view','Viewed '+IDEAS[id-1].name,id);$('#modal').hidden=false;document.body.style.overflow='hidden';renderSheet(id)}
+function closeModal(){$('#modal').hidden=true;document.body.style.overflow=''}
+function renderSheet(id){
+  const i=IDEAS[id-1],d=DOM[i.dom],v=votesOf(i),[vt,vc]=verdict(v),voted=!!UD.votes[id];
+  const tabs=[['overview','Overview'],['plan','Implementation'],['feedback','Feedback'],['helper','AI helper']];
+  $('#modal').innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(i.name)}">
+  <div class="sheethead"><div><span class="tag">${esc(d.name)}</span><h2>${esc(i.name)}</h2></div><button class="btn small" data-act="closemodal" aria-label="Close">Close</button></div>
+  <div class="mtabs" role="tablist">${tabs.map(t=>`<button role="tab" data-act="tab" data-t="${t[0]}" class="${S.tab===t[0]?'on':''}">${t[1]}</button>`).join('')}</div>
+  <div class="sheetbody" id="sheetbody">${tabBody(i,S.tab)}</div></div>`;
+  if(S.tab==='helper'){const m=$('#sheetbody .msgs');if(m)m.scrollTop=m.scrollHeight}
+}
+function tabBody(i,t){
+  const d=DOM[i.dom],v=votesOf(i),[vt,vc]=verdict(v),voted=!!UD.votes[i.id];
+  if(t==='overview')return `<p>${esc(descOf(i))}</p>
+   <div class="stats"><div class="stat"><b>${fmtN(v)}</b><span>votes</span></div><div class="stat"><b>${i.rating} / 5</b><span>rating</span></div><div class="stat"><b>${fmtCost(i.cost)}</b><span>to start</span></div><div class="stat"><b>${i.months} months</b><span>to launch</span></div><div class="stat"><b>${i.diff} / 5</b><span>difficulty</span></div></div>
+   <p><span class="verdict ${vc}">${vt}</span> <span class="muted">${v>=2500?'Many people back this idea. It is a strong one to go for.':v>=800?'Good support. Run a small pilot before spending more.':'Few votes so far. Test demand with 20 people first.'}</span></p>
+   <h3 style="margin:1.2rem 0 .4rem">How to find first customers</h3><p class="muted">${esc(d.market)}</p>
+   <div style="display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap"><button class="btn primary" data-act="vote" data-id="${i.id}">${voted?'Remove my vote':'Vote for this idea'}</button><button class="btn" data-act="tab" data-t="plan">See implementation</button><button class="btn" data-act="gofit" data-id="${i.id}">Check local fit</button></div>`;
+  if(t==='plan')return `<h3>Flow chart: from idea to running business</h3><div class="flow">${flowSVG(i)}</div><h3>Build it from scratch</h3><p class="muted" style="margin-bottom:1rem">Plan for about ${i.months+2} months in total, with a budget of ${fmtCost(i.cost)}.</p>${roadmapHTML(i)}`;
+  if(t==='feedback')return feedbackHTML(i);
+  return `<p class="muted" style="margin-bottom:.8rem">Ask about this idea. The helper answers from the idea's numbers and domain tips built into this app.</p>${chatHTML(String(i.id),i.id)}`;
+}
+function wrapT(t,n){const w=t.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>n&&c){L.push(c);c=x}else c=(c+' '+x).trim()});if(c)L.push(c);return L}
+function flowSVG(i){
+  const d=DOM[i.dom];
+  const steps=[['s',i.name],['b',`Validate: talk to 20 people from ${d.first}`],['b',`Paperwork: ${d.lic.split(',')[0]}`],['b',`Budget about ${fmtCost(i.cost)} and source ${d.kit}`],['b','Build a small pilot and run it for 4 weeks'],['d','Do users come back?'],['b','Launch to the wider area'],['b','Track sales and feedback, then grow']];
+  const cx=150,bw=260,gap=28;let y=10;const P=[];
+  steps.forEach(s=>{const lines=wrapT(s[1],29),h=s[0]==='d'?88:Math.max(40,18+lines.length*17);P.push({y,h,t:s[0],lines});y+=h+gap});
+  const H=y-gap+12;let o=`<svg width="520" height="${H}" viewBox="0 0 520 ${H}" role="img" aria-label="Flow chart for ${esc(i.name)}"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+  const txt=(p,x,cls)=>p.lines.map((l,k)=>`<text x="${x}" y="${p.y+p.h/2-(p.lines.length-1)*8.5+k*17+4.5}" text-anchor="middle" class="${cls||''}">${esc(l)}</text>`).join('');
+  P.forEach((p,k)=>{
+    if(k>0)o+=`<line class="ln" x1="${cx}" y1="${P[k-1].y+P[k-1].h}" x2="${cx}" y2="${p.y-1}" marker-end="url(#ar)"/>`;
+    if(p.t==='s')o+=`<rect class="ns" x="${cx-bw/2}" y="${p.y}" width="${bw}" height="${p.h}" rx="${p.h/2}"/>${txt(p,cx,'ts')}`;
+    else if(p.t==='d')o+=`<polygon class="nd" points="${cx},${p.y} ${cx+112},${p.y+p.h/2} ${cx},${p.y+p.h} ${cx-112},${p.y+p.h/2}"/>${txt(p,cx)}`;
+    else o+=`<rect class="nb" x="${cx-bw/2}" y="${p.y}" width="${bw}" height="${p.h}" rx="10"/>${txt(p,cx)}`;
+  });
+  const dc=P[5],pil=P[4],sx=410,sl=wrapT('No: fix problems using the feedback',20),sh=18+sl.length*17,sy=dc.y+dc.h/2-sh/2;
+  o+=`<line class="ln" x1="${cx+112}" y1="${dc.y+dc.h/2}" x2="${sx-88}" y2="${dc.y+dc.h/2}" marker-end="url(#ar)"/><rect class="nf" x="${sx-88}" y="${sy}" width="176" height="${sh}" rx="10"/>${sl.map((l,k)=>`<text x="${sx}" y="${sy+22+k*17}" text-anchor="middle">${esc(l)}</text>`).join('')}`;
+  o+=`<path class="ln" d="M${sx} ${sy} V${pil.y+pil.h/2} H${cx+bw/2+2}" marker-end="url(#ar)"/><text class="lb" x="${cx+8}" y="${dc.y+dc.h+17}">Yes</text></svg>`;
+  return o;
+}
+function roadmapHTML(i){
+  const d=DOM[i.dom],n=i.noun.toLowerCase(),m=i.months;
+  const ph=[
+   ['Validate the need','Weeks 1 to 2',[`Talk to 20 people from ${d.first} about ${n}.`,'Write down the three problems they mention most.','Visit 3 similar businesses nearby and note their price, quality and gaps.','Set one clear target, for example 30 paying users in the first month.']],
+   ['Plan money and paperwork','Weeks 3 to 4',[`Budget about ${fmtCost(i.cost)}. Keep 20% aside for surprises.`,`Register: ${d.lic}.`,'Open a separate bank account for this work.','List monthly costs and work out the break-even number of customers.']],
+   ['Set up',`Months 1 to ${Math.max(1,Math.ceil(m/2))}`,[`Source ${d.kit}.`,'Choose a location or channel (shop, stall, WhatsApp, app).','Recruit one or two helpers or partners you trust.','Make a name, a simple logo and a phone number for orders.']],
+   ['Build the pilot',`Months ${Math.max(1,Math.ceil(m/2))} to ${Math.max(2,m)}`,[`Make the smallest working version of the ${n}.`,'Run it for 4 weeks with 10 to 30 real users.','Write down every complaint and request.','Count how many users come back. That is your main signal.']],
+   ['Launch',`Month ${m+1}`,['Fix the top three problems from the pilot first.',`Reach out: ${d.market.split('.')[0]}.`,'Ask every customer for a review and for one friend to try it.']],
+   ['Grow',`Month ${m+2} onward`,['Track sales, costs and repeat customers weekly.','Add one new feature or product at a time.','Share your results in the Feedback tab to help the next builder.']]];
+  return ph.map(p=>`<div class="phase"><h3>${esc(p[0])}<small>${esc(p[1])}</small></h3><ul>${p[2].map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`).join('');
+}
+function feedbackHTML(i){
+  const all=(LS.get('ic_feedback',{})[i.id])||[],avg=all.length?(all.reduce((a,b)=>a+b.rating,0)/all.length).toFixed(1):null;
+  return `<h3>Feedback from people who tried this</h3><p class="muted" style="margin:.3rem 0 1rem">${all.length?`${all.length} response${all.length>1?'s':''}, average ${avg} / 5.`:'No feedback yet. If you tried this idea, share what happened.'}</p>
+  ${all.map(f=>`<div class="fb"><b>${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</b> <small>${esc(f.name)} · ${esc(f.did)} · ${new Date(f.t).toLocaleDateString('en-IN')}${f.spent?' · spent '+fmtCost(+f.spent):''}</small>${f.worked?`<p><b>What worked:</b> ${esc(f.worked)}</p>`:''}${f.change?`<p><b>What to change:</b> ${esc(f.change)}</p>`:''}</div>`).join('')}
+  <form class="panel2" data-form="feedback" data-id="${i.id}" style="margin-top:1rem" novalidate><h3 style="margin-bottom:.8rem">Add your feedback</h3>
+   <div class="row2"><label>Did you try this idea?<select name="did"><option>Yes, I built it</option><option>Partly</option><option>No, I tried something similar</option></select></label>
+   <label>Your rating<select name="rating"><option value="5">5 - Excellent</option><option value="4">4 - Good</option><option value="3">3 - Okay</option><option value="2">2 - Poor</option><option value="1">1 - Not worth it</option></select></label></div>
+   <label>Money spent in rupees (optional)<input name="spent" type="number" min="0"></label>
+   <label>What worked<textarea name="worked"></textarea></label><label>What should change<textarea name="change"></textarea></label>
+   <p class="err" id="ferr" role="alert"></p><button class="btn primary">Submit feedback</button></form>`;
+}
+
+/* ================= AI helper (built-in, no internet needed) ================= */
+function findIdea(t){for(const i of IDEAS)if(t.includes(i.name.toLowerCase()))return i;return null}
+function aiReply(q,idea){
+  const t=q.toLowerCase();idea=idea||findIdea(t);
+  const dm=DOMAINS.find(d=>d.kw.some(k=>t.includes(k)));
+  if(/^(hi|hello|hey|namaste)\b/.test(t))return 'Hi! Ask me for ideas within a budget, the top ideas in a domain, or open an idea and ask about its cost, first steps, risks, customers or paperwork.';
+  const b=t.match(/(?:₹|rs\.?|inr|budget|under|below|within|upto|up to)\s*([\d,.]+)\s*(k|lakh|lakhs|l|crore|cr)?/);
+  if(b&&!/steps|start/.test(t.replace(b[0],''))||b&&/idea|suggest|recommend/.test(t)){
+    let n=parseFloat(b[1].replace(/,/g,''));const u=b[2];if(u==='k')n*=1e3;else if(u&&/^(l|lakh|lakhs)$/.test(u))n*=1e5;else if(u&&/^(crore|cr)$/.test(u))n*=1e7;
+    const l=IDEAS.filter(i=>i.cost<=n&&(!dm||i.dom===dm.id)).sort((a,b)=>b.votes-a.votes).slice(0,5);
+    return l.length?`Top ideas you can start with ${fmtCost(n)}${dm?' in '+dm.name:''}:\n`+l.map(i=>`• ${i.name}: ${fmtN(i.votes)} votes, start ${fmtCost(i.cost)}`).join('\n')+'\nOpen the Ideas page and search a name to see its full plan.':`Nothing in ${dm?dm.name:'the list'} starts at ${fmtCost(n)}. Try a higher budget or another domain.`;
+  }
+  if(/top|best|popular|most voted|trending/.test(t)&&!idea){
+    const l=IDEAS.filter(i=>!dm||i.dom===dm.id).sort((a,b)=>b.votes-a.votes).slice(0,5);
+    return `Most voted${dm?' '+dm.name:''} ideas:\n`+l.map((i,k)=>`${k+1}. ${i.name}: ${fmtN(i.votes)} votes, rating ${i.rating}`).join('\n');
+  }
+  if(idea){
+    const d=DOM[idea.dom],n=idea.noun.toLowerCase();
+    if(/cost|invest|money|budget|fund|capital|price/.test(t))return `${idea.name} needs about ${fmtCost(idea.cost)} to start. Keep 20% aside for surprises. Most of it goes into: ${d.kit}.`;
+    if(/step|start|how|begin|build|plan|implement/.test(t))return `First steps for ${idea.name}:\n1. Talk to 20 people from ${d.first}.\n2. Register: ${d.lic.split(',')[0]}.\n3. Source ${d.kit}.\n4. Run a 4 week pilot with 10 to 30 users.\n5. Fix problems, then launch.\nThe Implementation tab has the full flow chart.`;
+    if(/risk|problem|challeng|fail|danger/.test(t))return `Main risks for ${idea.name}:\n• Too few repeat customers. Check this in the pilot.\n• Costs creeping above ${fmtCost(idea.cost)}.\n• Difficulty is ${idea.diff}/5, so plan for ${idea.diff>=4?'extra training and a backup partner':'steady but manageable work'}.\n• Paperwork delays. Start registration early.`;
+    if(/customer|market|promot|sell|advertis|user|client/.test(t))return d.market;
+    if(/licen|regist|legal|gst|permit|paper/.test(t))return `For ${idea.name}: ${d.lic}. Rules vary by state and town, so confirm with your local office or a CA before you start.`;
+    if(/time|long|when|month|launch/.test(t))return `Expect about ${idea.months} months to a pilot and ${idea.months+2} months to a full launch for ${idea.name}.`;
+    if(/profit|earn|revenue|income|money make|return/.test(t)){const m=Math.round(idea.cost*0.12*(0.6+idea.rating/5)/1000)*1000;return `A rough planning figure for ${idea.name} is ₹${fmtN(m)} a month in sales once it is running well. This is only an estimate from the idea's cost and rating, not a promise. Build your own numbers during the pilot.`}
+    if(/team|staff|hire|people|partner/.test(t))return `${idea.name} can start with you plus 1 or 2 helpers. Add people only after the pilot shows repeat customers.`;
+    if(/where|location|place|area|fit/.test(t))return `Use the Local fit page to check ${idea.name} for your landmark, area, district, state and country.`;
+    return `${idea.name}: ${fmtN(idea.votes)} votes, rating ${idea.rating}, start ${fmtCost(idea.cost)}, about ${idea.months} months to launch. Ask about cost, steps, risks, customers, paperwork or time.`;
+  }
+  return 'I can help with: ideas within a budget (try "ideas under ₹50,000"), the top ideas in a domain, or questions about a specific idea such as its cost, first steps, risks, customers or paperwork. Type an idea name to talk about it.';
+}
+function chatHTML(key,ideaId){
+  const msgs=UD.chats[key]||[];
+  const chips=ideaId?['How much money do I need?','What are the first steps?','What are the biggest risks?','How do I find customers?','What paperwork is needed?']:['Ideas under ₹50,000','Top agriculture ideas','Best education ideas','Ideas under ₹2 lakh'];
+  return `<div class="chat" data-key="${key}"><div class="msgs">${msgs.length?msgs.map(m=>`<div class="bub ${m.r}">${esc(m.t)}</div>`).join(''):'<p class="empty">No messages yet. Pick a question below or type your own.</p>'}</div>
+  <div class="chips">${chips.map(c=>`<button type="button" data-act="chip" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+  <form data-form="chat" data-key="${key}" data-idea="${ideaId||''}"><input name="q" placeholder="${ideaId?'Ask about this idea':'Ask Idea2Decision'}" autocomplete="off" aria-label="Your question"><button class="btn primary">Send</button></form></div>`;
+}
+function sendChat(f,q){
+  q=(q||f.elements.q.value).trim();if(!q)return;
+  const key=f.dataset.key,idea=f.dataset.idea?IDEAS[f.dataset.idea-1]:null;
+  (UD.chats[key]=UD.chats[key]||[]).push({r:'u',t:q},{r:'a',t:aiReply(q,idea)});
+  UD.chats[key]=UD.chats[key].slice(-60);logH('chat',q,idea?idea.id:null);
+  const box=f.closest('.chat');box.outerHTML=chatHTML(key,idea?idea.id:'');
+  const nb=$(`.chat[data-key="${key}"]`);const m=$('.msgs',nb);m.scrollTop=m.scrollHeight;$('input',nb).focus();
+}
+function viewChat(){
+  view().innerHTML=`<div class="pagehead"><h1>Chat</h1><p>Ask Idea2Decision for help choosing an idea. It can suggest ideas for a budget, show top ideas by domain and answer questions about any idea you name.</p></div><div class="panel2 chatpage">${chatHTML('global','')}</div>`;
+  const m=$('.msgs');m.scrollTop=m.scrollHeight;
+}
+
+/* ================= charts ================= */
+function monthLabels(){const o=[],n=new Date();for(let k=5;k>=0;k--){const d=new Date(n.getFullYear(),n.getMonth()-k,1);o.push(d.toLocaleString('en',{month:'short'}))}return o}
+function monthly(i){const r=rng(i.id*31),w=[0,1,2,3,4,5].map(k=>(1+k*.5)*(.8+r()*.4)),s=w.reduce((a,b)=>a+b,0);return w.map(x=>i.votes*x/s)}
+function barSVG(vals,labels,col){
+  const w=300,h=160,m={l:8,r:8,t:20,b:22},iw=w-m.l-m.r,ih=h-m.t-m.b,max=Math.max(...vals)*1.1||1,sl=iw/vals.length,bw=sl*.62;
+  let s=`<svg class="chart" viewBox="0 0 ${w} ${h}" role="img"><line x1="${m.l}" x2="${w-m.r}" y1="${h-m.b}" y2="${h-m.b}" stroke="var(--line)"/>`;
+  vals.forEach((v,k)=>{const x=m.l+sl*k+(sl-bw)/2,bh=v/max*ih,y=h-m.b-bh;s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="3" fill="${col}"/><text class="ct" x="${x+bw/2}" y="${y-4}" text-anchor="middle">${short(v)}</text><text class="ct" x="${x+bw/2}" y="${h-7}" text-anchor="middle">${labels[k]}</text>`});
+  return s+'</svg>';
+}
+function lineSVG(vals,labels,col){
+  const w=300,h=160,m={l:12,r:12,t:20,b:22},iw=w-m.l-m.r,ih=h-m.t-m.b,max=Math.max(...vals)*1.1||1;
+  const pts=vals.map((v,k)=>[m.l+iw*k/(vals.length-1),h-m.b-v/max*ih]);
+  let s=`<svg class="chart" viewBox="0 0 ${w} ${h}" role="img"><line x1="${m.l}" x2="${w-m.r}" y1="${h-m.b}" y2="${h-m.b}" stroke="var(--line)"/>`;
+  s+=`<path d="M${pts.map(p=>p.join(',')).join(' L')} L${pts[pts.length-1][0]},${h-m.b} L${pts[0][0]},${h-m.b}Z" fill="${col}" opacity=".16"/><path d="M${pts.map(p=>p.join(',')).join(' L')}" fill="none" stroke="${col}" stroke-width="3" stroke-linejoin="round"/>`;
+  pts.forEach((p,k)=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${col}"/><text class="ct" x="${p[0]}" y="${h-7}" text-anchor="middle">${labels[k]}</text>`});
+  s+=`<text class="ct" x="${pts[pts.length-1][0]}" y="${pts[pts.length-1][1]-9}" text-anchor="end">${short(vals[vals.length-1])}</text>`;
+  return s+'</svg>';
+}
+function donutSVG(parts,col){
+  const r=46,C=2*Math.PI*r,tot=parts.reduce((a,b)=>a+b.v,0),op=[1,.7,.45,.25];let acc=0;
+  let s=`<svg class="chart" viewBox="0 0 300 160" role="img"><g transform="rotate(-90 80 80)">`;
+  parts.forEach((p,k)=>{const len=p.v/tot*C;s+=`<circle cx="80" cy="80" r="${r}" fill="none" stroke="${col}" stroke-opacity="${op[k]}" stroke-width="26" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-acc}"/>`;acc+=len});
+  s+='</g>';parts.forEach((p,k)=>{s+=`<rect x="170" y="${40+k*26}" width="12" height="12" rx="3" fill="${col}" opacity="${op[k]}"/><text class="cl" x="190" y="${50+k*26}">${p.l}: ${Math.round(p.v)}</text>`});
+  return s+'</svg>';
+}
+function viewRank(){
+  const top=topIdeas(),L=monthLabels();
+  view().innerHTML=`<div class="pagehead"><h1>Rank</h1><p>The best ideas ranked by votes and rating. Each graph uses one of five colors, repeating every five ranks, so you can scan by group.</p></div>
+  <div class="legend">${COLORS.map((c,k)=>`<span><i style="background:${c}"></i>Ranks ${k+1}, ${k+6}, ${k+11}, ${k+16}, ${k+21}</span>`).join('')}</div>
+  <div class="tscroll"><table><thead><tr><th>Rank</th><th>Idea</th><th>Domain</th><th>Votes</th><th>Rating</th></tr></thead><tbody>${top.slice(0,10).map((i,k)=>`<tr data-act="open" data-id="${i.id}"><td><b style="color:${COLORS[k%5]}">#${k+1}</b></td><td>${esc(i.name)}</td><td>${esc(DOM[i.dom].name)}</td><td>${fmtN(votesOf(i))}</td><td>★ ${i.rating}</td></tr>`).join('')}</tbody></table></div>
+  <h2 style="margin-bottom:.8rem">Graphs for the top ${S.rankCount} ideas</h2><div class="charts">${top.slice(0,S.rankCount).map((i,k)=>{
+    const col=COLORS[k%5],ty=k%3,mv=monthly(i);let g,tt;
+    if(ty===0){g=barSVG(mv,L,col);tt='Votes by month'}
+    else if(ty===1){let a=0;g=lineSVG(mv.map(x=>a+=x),L,col);tt='Vote growth'}
+    else{g=donutSVG([{l:'Demand',v:Math.min(100,i.votes/50)},{l:'Impact',v:i.rating*20},{l:'Ease',v:(6-i.diff)*20},{l:'Budget',v:Math.max(10,100-i.cost/3000)}],col);tt='Score split'}
+    return `<div class="chartcard" style="border-top-color:${col}" data-act="open" data-id="${i.id}" tabindex="0" role="button" aria-label="Open ${esc(i.name)}"><h3><span style="color:${col}">#${k+1}</span>${esc(i.name)}</h3><small>${tt} · ${fmtN(votesOf(i))} votes</small>${g}</div>`}).join('')}</div>
+  ${S.rankCount<30?'<button class="btn more" data-act="morerank">Show 6 more graphs</button>':''}`;
+}
+
+/* ================= local fit ================= */
+const METROS=['bengaluru','bangalore','mumbai','delhi','chennai','hyderabad','kolkata','pune','ahmedabad','kochi','jaipur','lucknow','surat','gurugram','noida','chandigarh','indore','coimbatore','thiruvananthapuram','visakhapatnam'];
+const COASTAL=['kerala','goa','tamil nadu','maharashtra','gujarat','odisha','west bengal','andhra pradesh','karnataka','puducherry'];
+const HILLY=['himachal pradesh','uttarakhand','sikkim','jammu and kashmir','arunachal pradesh','meghalaya','nagaland','mizoram','manipur','ladakh','darjeeling'];
+function placeType(l){
+  const t=(l.landmark+' '+l.area+' '+l.district).toLowerCase();
+  if(/village|gram|taluk|tehsil|mandal|panchayat|rural/.test(t))return 2;
+  if(METROS.some(m=>t.includes(m)))return 0;
+  if(/nagar|layout|colony|sector|mall|station|junction|airport|main road|city|market|college|campus/.test(t))return 0;
+  return 1;
+}
+function fitScore(domId,idea,l){
+  const d=DOM[domId],pt=placeType(l),st=l.state.toLowerCase(),coastal=COASTAL.includes(st),hilly=HILLY.includes(st)||/hill|ghat|himalay/.test((l.area+l.district).toLowerCase());
+  let place=d.aff[pt],bonus=0;
+  if(idea){const m=idea.mod;
+    if(URBAN_MODS.includes(m))bonus=[12,2,-10][pt];else if(RURAL_MODS.includes(m))bonus=[-8,5,12][pt];
+    else if(m==='Coastal')bonus=coastal?14:-12;else if(m==='Hill')bonus=hilly?14:-12;}
+  const demand=idea?Math.min(100,30+idea.votes/50*.7):65;
+  const region=domId==='community'?(coastal||hilly?92:62):domId==='energy'?(coastal?85:hilly?78:72):domId==='agri'?(coastal?78:hilly?66:80):70;
+  const india=/india|bharat/i.test(l.country)?100:55;
+  const total=Math.max(5,Math.min(98,Math.round(place*.45+demand*.25+region*.15+india*.15+bonus)));
+  return {total,place,demand:Math.round(demand),region,india,bonus,pt,coastal,hilly};
+}
+function viewFit(){
+  const p=me.profile||{};
+  view().innerHTML=`<div class="pagehead"><h1>Local fit</h1><p>Enter where the idea would live, from a landmark up to the country, and pick an idea domain. You will see if it is likely to work there.</p></div>
+  <div class="fitgrid"><form class="panel2" data-form="fit" novalidate>
+   <label>Landmark<input name="landmark" placeholder="Nearest well-known place" required></label>
+   <label>Area<input name="area" placeholder="Locality or village" required></label>
+   <label>District<input name="district" value="${esc(p.city||'')}" required></label>
+   <div class="row2"><label>State<input name="state" value="${esc(p.state||'')}" required></label><label>Country<input name="country" value="${esc(p.country||'')}" required></label></div>
+   <label>Idea domain<select name="domain" required><option value="">Choose a domain</option>${DOMAINS.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></label>
+   <label>Specific idea (optional)<input name="idea" list="fitideas" placeholder="Leave empty to check the whole domain" autocomplete="off"></label><datalist id="fitideas"></datalist>
+   <p class="err" id="fiterr" role="alert"></p><button class="btn primary">Check if it will work</button></form>
+   <div class="panel2" id="fitout"><p class="empty">Your result will appear here.</p></div></div>`;
+  const sel=$('select[name=domain]'),dl=$('#fitideas');
+  sel.addEventListener('change',()=>{dl.innerHTML=sel.value?IDEAS.filter(i=>i.dom===sel.value).sort((a,b)=>b.votes-a.votes).map(i=>`<option value="${esc(i.name)}">`).join(''):''});
+  if(S.fitIdea){const i=IDEAS[S.fitIdea-1];sel.value=i.dom;sel.dispatchEvent(new Event('change'));$('input[name=idea]').value=i.name;S.fitIdea=null}
+}
+function runFit(f){
+  const g=n=>f.elements[n].value.trim(),err=$('#fiterr');err.textContent='';
+  const l={landmark:g('landmark'),area:g('area'),district:g('district'),state:g('state'),country:g('country')},dom=g('domain');
+  if(!l.landmark||!l.area||!l.district||!l.state||!l.country||!dom)return err.textContent='Fill in landmark, area, district, state, country and choose a domain.';
+  let idea=null;if(g('idea')){idea=IDEAS.find(i=>i.dom===dom&&i.name.toLowerCase()===g('idea').toLowerCase());if(!idea)return err.textContent='Pick an idea from the list for this domain, or leave it empty.'}
+  const r=fitScore(dom,idea,l),d=DOM[dom],pts=['a busy urban area','a semi-urban or town area','a rural area'][r.pt];
+  const vd=r.total>=70?['It should work here','var(--ok)']:r.total>=50?['It could work with changes','var(--gold)']:['It is unlikely to work as planned','var(--danger)'];
+  const target=idea?idea.name:'Ideas in '+d.name;
+  const reasons=[`Your place reads as ${pts} (from your landmark, area and district). ${d.name} ideas score ${Math.round(r.place)}/100 for this kind of place.`];
+  if(idea&&r.bonus>0)reasons.push(`The "${idea.mod}" style suits this place.`);
+  if(idea&&r.bonus<0)reasons.push(`The "${idea.mod}" style is a weak match for this place. Consider a different style.`);
+  if(idea)reasons.push(`${fmtN(idea.votes)} people voted for it, which gives a demand score of ${r.demand}/100.`);
+  if(r.coastal)reasons.push(`${l.state} has a coastline, which helps tourism, energy and food ideas.`);
+  if(r.hilly)reasons.push('Hilly terrain helps tourism and small energy ideas but can raise transport costs.');
+  if(r.india<100)reasons.push('Costs, licences and tips in this app are written for India, so results outside India are less reliable.');
+  reasons.push(r.total>=70?`Next step: run a 4 week pilot near ${l.landmark}.`:r.total>=50?'Next step: talk to 20 local people and adjust the idea before spending money.':'Next step: try a different style of this idea or another domain from the list below.');
+  const alts=IDEAS.filter(i=>i.dom===dom&&(!idea||i.id!==idea.id)).map(i=>({i,s:fitScore(dom,i,l).total})).sort((a,b)=>b.s-a.s||b.i.votes-a.i.votes).slice(0,3);
+  const C=2*Math.PI*44,bar=(n,v)=>`<div class="bar"><div><span>${n}</span><b>${Math.round(v)}</b></div><span class="t"><i style="width:${Math.max(3,Math.min(100,v))}%"></i></span></div>`;
+  $('#fitout').innerHTML=`<div class="ring"><svg width="110" height="110" viewBox="0 0 110 110" role="img" aria-label="Score ${r.total} out of 100"><circle cx="55" cy="55" r="44" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="55" cy="55" r="44" fill="none" stroke="${vd[1]}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${r.total/100*C} ${C}" transform="rotate(-90 55 55)"/><text x="55" y="62" text-anchor="middle" style="font-family:var(--display);font-weight:800;font-size:26px;fill:var(--ink)">${r.total}</text></svg>
+   <div><h2 style="color:${vd[1]}">${vd[0]}</h2><p class="muted">${esc(target)} at ${esc(l.area)}, ${esc(l.district)}, ${esc(l.state)}, ${esc(l.country)}</p></div></div>
+   ${bar('Place type match',r.place)}${bar('Demand',r.demand)}${bar('Region',r.region)}${bar('Country fit',r.india)}
+   <h3 style="margin:1rem 0 .4rem">Why</h3><ul class="reasons">${reasons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+   <h3 style="margin:1rem 0 .4rem">Best fits in ${esc(d.name)} for this place</h3><div class="chips">${alts.map(a=>`<button type="button" data-act="open" data-id="${a.i.id}">${esc(a.i.name)} (${a.s})</button>`).join('')}</div>
+   <p class="hint">This is an estimate from rules built into the app (place type, region, votes and country). It does not use live local data, so confirm with 20 local people before investing.</p>`;
+  logH('fit',`Local fit: ${target} at ${l.area}, ${l.district}, ${l.state} → ${r.total}/100`,idea?idea.id:null);
+}
+
+/* ================= history ================= */
+const KIND={search:'Search',view:'Viewed',fit:'Local fit',chat:'Chat',vote:'Vote'};
+function viewHistory(){
+  view().innerHTML=`<div class="pagehead"><h1>History</h1><p>Search all ideas from the bar below, then see everything you did before.</p></div>
+  <form class="urlbar" data-form="hsearch" role="search"><span aria-hidden="true">🔎</span><input name="q" placeholder="Search ideas, for example solar, tiffin or homestay" aria-label="Search ideas" autocomplete="off"><button class="btn primary">Search</button></form>
+  <div id="hres"></div>
+  <div class="toolbar" style="margin-top:1.4rem"><h2 style="flex:2">Your history</h2><input id="hfilter" type="search" placeholder="Filter history" aria-label="Filter history"><button class="btn" data-act="clearhist">Clear history</button></div>
+  <ul class="hist" id="hlist"></ul>`;
+  drawHist();
+}
+function drawHist(){
+  const f=($('#hfilter')?.value||'').toLowerCase(),l=UD.history.filter(h=>!f||h.text.toLowerCase().includes(f));
+  $('#hlist').innerHTML=l.map(h=>`<li ${h.id?`data-act="open" data-id="${h.id}" tabindex="0"`:''}><span><span class="kind">${KIND[h.type]||h.type}</span>${esc(h.text)}</span><small>${new Date(h.t).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}</small></li>`).join('')||'<li><span class="muted">Nothing here yet. Search, open ideas or run a local fit check and it will show up.</span></li>';
+}
+function histSearch(f){
+  const q=f.elements.q.value.trim();if(!q)return;const ql=q.toLowerCase();
+  const r=IDEAS.filter(i=>i.name.toLowerCase().includes(ql)||DOM[i.dom].name.toLowerCase().includes(ql)).sort((a,b)=>b.votes-a.votes);
+  logH('search','Searched "'+q+'"');
+  $('#hres').innerHTML=`<p class="count">${fmtN(r.length)} ideas for "${esc(q)}". Showing the top ${Math.min(12,r.length)}.</p><div class="grid">${r.slice(0,12).map(cardHTML).join('')}</div>`;drawHist();
+}
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el){if(e.target.id==='modal')closeModal();return}
+  const a=el.dataset.act,id=+el.dataset.id;
+  switch(a){
+    case 'authtab':showAuth(el.dataset.m);break;
+    case 'page':setPage(el.dataset.p);break;
+    case 'drawer':openDrawer();break;
+    case 'closedrawer':closeDrawer();break;
+    case 'theme':setTheme(el.dataset.t);openDrawer();break;
+    case 'logout':logout();break;
+    case 'delete':deleteAccount();break;
+    case 'editprofile':closeDrawer();showSetup(true);break;
+    case 'cancelsetup':$('#setup').hidden=true;$('#setup').style.cssText='';break;
+    case 'more':S.limit+=24;updateGrid();break;
+    case 'morerank':S.rankCount=Math.min(30,S.rankCount+6);viewRank();break;
+    case 'vote':vote(id);break;
+    case 'open':openIdea(id);break;
+    case 'closemodal':closeModal();break;
+    case 'tab':S.tab=el.dataset.t;renderSheet(S.openId);break;
+    case 'gofit':S.fitIdea=id;closeModal();setPage('fit');break;
+    case 'chip':{const f=el.closest('.chat').querySelector('form');sendChat(f,el.dataset.q);break}
+    case 'clearhist':if(confirm('Clear all history?')){UD.history=[];saveUD();drawHist()}break;
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(!$('#modal').hidden)closeModal();else closeDrawer()}
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('.chartcard,.hist li[data-act]')){e.preventDefault();e.target.click()}
+});
+document.addEventListener('submit',e=>{
+  const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
+  switch(f.dataset.form){
+    case 'login':doLogin(f);break;
+    case 'signup':doSignup(f);break;
+    case 'profile':saveProfile(f);break;
+    case 'chat':sendChat(f);break;
+    case 'fit':runFit(f);break;
+    case 'hsearch':histSearch(f);break;
+    case 'feedback':{
+      const i=IDEAS[f.dataset.id-1],g=n=>f.elements[n].value.trim();
+      if(!g('worked')&&!g('change'))return $('#ferr').textContent='Write what worked or what should change.';
+      const fb=LS.get('ic_feedback',{});(fb[i.id]=fb[i.id]||[]).unshift({by:me.email,name:me.profile.name,did:g('did'),rating:+g('rating'),spent:g('spent'),worked:g('worked'),change:g('change'),t:Date.now()});
+      LS.set('ic_feedback',fb);logH('view','Gave feedback on '+i.name,i.id);toast('Thanks for your feedback');renderSheet(i.id);break}
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){S.q=e.target.value;S.limit=24;updateGrid()}
+  if(e.target.id==='hfilter')drawHist();
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='dom'){S.dom=e.target.value;S.limit=24;updateGrid()}
+  if(e.target.id==='sort'){S.sort=e.target.value;S.limit=24;updateGrid()}
+  if(e.target.id==='q'&&e.target.value.trim())logH('search','Searched "'+e.target.value.trim()+'"');
+});
+
+/* ================= boot ================= */
+(function boot(){
+  setTheme(LS.get('ic_theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+  const email=LS.get('ic_session',null);
+  if(email&&users()[email]){loadUser(email);profileDone()?enterApp():showSetup(false)}else showAuth('login');
+})();
+</script>
+</body>
+</html>
